@@ -147,12 +147,14 @@ export async function GET() {
       home: {
         name: homeTeam || "Home",
         code: abbreviate(homeTeam || "HOM"),
+        countryId: (homeTeam || "HOM").substring(0, 2).toLowerCase(),
         flag: "⚽",
         score: scores.home,
       },
       away: {
         name: awayTeam || "Away",
         code: abbreviate(awayTeam || "AWY"),
+        countryId: (awayTeam || "AWY").substring(0, 2).toLowerCase(),
         flag: "⚽",
         score: scores.away,
       },
