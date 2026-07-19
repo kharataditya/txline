@@ -91,10 +91,20 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
         setTxStatus("success");
       } catch (err) {
         console.error("Transaction failed:", err);
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        
+        // If the user simply closed the Phantom popup or rejected it, fail silently and reset
+        if (errorMsg.toLowerCase().includes("reject") || errorMsg.toLowerCase().includes("cancel")) {
+          setTxStatus("idle");
+          setSelectedOption(null);
+          setErrorMessage(null);
+          return;
+        }
+
+        // For real errors, show the error state
         setTxStatus("error");
-        setErrorMessage(
-          err instanceof Error ? err.message : "Transaction failed"
-        );
+        setErrorMessage("Transaction failed. Please try again.");
+        
         // Reset after 3 seconds
         setTimeout(() => {
           setTxStatus("idle");
@@ -110,35 +120,26 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 40, scale: 0.95 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-strong rounded-2xl overflow-hidden relative"
+      <div
+        className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 rounded-2xl overflow-hidden relative z-10"
       >
         {/* Dismiss button */}
         <button
           onClick={() => setDismissed(true)}
-          className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-slate-100/60 transition-colors z-10"
+          aria-label="Dismiss micro-wager"
+          className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none transition-colors z-10"
         >
-          <X className="w-4 h-4 text-slate-400" />
+          <X className="w-4 h-4 text-slate-500" />
         </button>
 
-        {/* AI Accent Strip */}
-        <div className="h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500" />
-
         {/* Header */}
-        <div className="px-5 pt-4 pb-2 flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
-            <Bot className="w-4 h-4 text-white" />
-          </div>
+        <div className="px-6 pt-6 pb-3 flex items-center gap-3">
+          <Bot className="w-4 h-4 text-slate-400" />
           <div>
-            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
               AI Micro-Wager
             </span>
             <div className="flex items-center gap-1.5">
-              <Zap className="w-3 h-3 text-amber-500" />
               <span className="text-[10px] text-slate-400 font-medium">
                 Triggered by odds shift
               </span>
@@ -147,25 +148,30 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
         </div>
 
         {/* Question */}
-        <div className="px-5 py-3">
-          <h3 className="text-lg font-bold text-slate-900 leading-snug mb-3">
+        <div className="px-6 pb-2">
+          <h3 className="text-[19px] font-extrabold text-slate-800 leading-tight">
             {poll.question}
           </h3>
 
           {/* AI Insight */}
-          <div className="flex gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border border-blue-100/60 mb-4">
-            <Bot className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-            <p className="text-[12px] text-blue-700 leading-relaxed font-medium">
+          <motion.div 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25, duration: 0.5, type: "spring", bounce: 0.4 }}
+            className="mt-5 p-4 bg-slate-50/80 rounded-xl border border-slate-100 flex gap-3.5 shadow-[0_2px_10px_rgb(0,0,0,0.02)]"
+          >
+            <Bot className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+            <p className="text-[12px] text-slate-600 leading-relaxed font-medium">
               {poll.insight}
             </p>
-          </div>
+          </motion.div>
 
           {/* Timer */}
-          <div className="flex items-center gap-1.5 mb-4">
+          <div className="flex items-center gap-2 mt-5 mb-5">
             <Clock className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-[11px] font-semibold text-slate-500">
               Expires in{" "}
-              <span className="text-slate-700 tabular-nums">
+              <span className="text-slate-900 tabular-nums">
                 {formatTime(timeLeft)}
               </span>
             </span>
@@ -187,33 +193,44 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
           {/* Success State */}
           {txStatus === "success" && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center gap-3 py-4"
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="flex flex-col items-center gap-4 py-6 px-5 mt-2 bg-gradient-to-b from-emerald-50/50 to-transparent rounded-2xl border border-emerald-100/50"
             >
-              <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200/60">
-                <Check className="w-7 h-7 text-emerald-600" />
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 shadow-[0_4px_20px_rgba(16,185,129,0.4)]">
+                <Check className="w-8 h-8 text-white stroke-[2.5]" />
               </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-slate-900">
-                  Bet Placed! 🎉
+              
+              <div className="text-center space-y-1">
+                <h4 className="text-xl font-black text-slate-800 tracking-tight">
+                  Wager Confirmed
+                </h4>
+                <p className="text-[12px] font-medium text-emerald-600/80">
+                  Transaction successfully verified on-chain.
                 </p>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  {BET_AMOUNT_SOL} SOL on &quot;
-                  {poll.options[selectedOption!]?.label}&quot; @{" "}
+              </div>
+
+              <div className="flex items-center gap-2.5 bg-white border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] rounded-xl px-4 py-2.5 w-full justify-center">
+                <span className="text-[12px] font-semibold text-slate-500">
+                  {BET_AMOUNT_SOL} SOL on <span className="text-slate-800 font-bold">&quot;{poll.options[selectedOption!]?.label}&quot;</span>
+                </span>
+                <div className="w-1 h-1 rounded-full bg-slate-200" />
+                <span className="text-[13px] font-black text-emerald-500">
                   {poll.options[selectedOption!]?.multiplier}x
-                </p>
-                {txSignature && (
-                  <a
-                    href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    View on Solana Explorer →
-                  </a>
-                )}
+                </span>
               </div>
+
+              {txSignature && (
+                <a
+                  href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-full gap-1.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[12px] font-bold text-slate-500 hover:text-slate-700 transition-colors border border-slate-100 mt-2"
+                >
+                  View on Solana Explorer
+                  <svg className="w-3.5 h-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+              )}
             </motion.div>
           )}
 
@@ -231,14 +248,15 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
                   <motion.button
                     key={option.label}
                     whileHover={!isDisabled ? { scale: 1.02 } : {}}
-                    whileTap={!isDisabled ? { scale: 0.98 } : {}}
+                    whileTap={!isDisabled ? { scale: 0.94, transition: { type: "spring", stiffness: 400, damping: 10 } } : {}}
                     onClick={() => handleBet(idx)}
                     disabled={isDisabled}
-                    className={`relative flex flex-col items-center gap-1.5 py-4 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                    aria-label={`Bet ${BET_AMOUNT_SOL} SOL on ${option.label} at ${option.multiplier}x odds`}
+                    className={`group relative flex flex-col items-center gap-1 py-3.5 px-4 rounded-xl font-semibold transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus:outline-none ${
                       idx === 0
-                        ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
-                        : "bg-white border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-                    } ${isDisabled ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+                        ? "bg-transparent border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white hover:shadow-[0_8px_20px_rgba(59,130,246,0.3)]"
+                        : "bg-transparent border-2 border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white hover:shadow-[0_8px_20px_rgba(30,41,59,0.2)]"
+                    } ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -248,13 +266,22 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
                           {option.label}
                         </span>
                         <span
-                          className={`text-xs font-semibold ${
+                          className={`text-xs font-semibold transition-colors duration-300 ${
                             idx === 0
-                              ? "text-blue-200"
-                              : "text-slate-400"
+                              ? "text-blue-500/80 group-hover:text-blue-100"
+                              : "text-slate-500 group-hover:text-slate-300"
                           }`}
                         >
-                          {option.multiplier}x · {BET_AMOUNT_SOL} SOL
+                          <span
+                            className={`font-bold transition-colors duration-300 ${
+                              idx === 0
+                                ? "text-blue-600 group-hover:text-white"
+                                : "text-slate-900 group-hover:text-white"
+                            }`}
+                          >
+                            {option.multiplier}x
+                          </span>{" "}
+                          · {BET_AMOUNT_SOL} SOL
                         </span>
                       </>
                     )}
@@ -269,7 +296,7 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
             <motion.p
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-[11px] text-red-600 font-medium text-center mt-3 px-3 py-2 rounded-lg bg-red-50 border border-red-200/60"
+              className="text-[11px] text-red-400 font-medium text-center mt-3 px-3 py-2 rounded-lg bg-red-500/20 border border-red-500/30"
             >
               {errorMessage}
             </motion.p>
@@ -277,22 +304,22 @@ export const MicroWagerCard: React.FC<MicroWagerCardProps> = ({ match }) => {
 
           {/* Not connected hint */}
           {!connected && txStatus === "idle" && (
-            <p className="text-[11px] text-slate-400 text-center mt-3 font-medium">
+            <p className="text-[11px] text-slate-500 text-center mt-4 mb-2 font-medium">
               Connect your Solana wallet to place a bet
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-2.5 border-t border-white/20 bg-slate-50/30 flex items-center justify-between">
+        <div className="px-6 py-4 flex items-center justify-between border-t border-slate-50 mt-4">
           <span className="text-[10px] text-slate-400">
-            Powered by Solana Devnet
+            Solana Devnet
           </span>
           <span className="text-[10px] text-slate-400 tabular-nums">
-            {BET_AMOUNT_SOL} SOL per bet
+            {BET_AMOUNT_SOL} SOL / bet
           </span>
         </div>
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

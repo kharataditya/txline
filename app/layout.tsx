@@ -29,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-slate-50 relative overflow-x-hidden">
+        {/* Hexagon Pattern Overlay */}
+        <div className="bg-pattern" />
+        
         <SolanaProvider>
           <Navbar />
           <main className="flex-1">{children}</main>

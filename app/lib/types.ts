@@ -3,6 +3,7 @@
 export interface Team {
   name: string;
   code: string;      // 3-letter code (e.g., "ARG")
+  countryId: string; // 2-letter ISO code (e.g., "ar", "fr") for FlagCDN
   flag: string;      // emoji flag
   score: number;
 }

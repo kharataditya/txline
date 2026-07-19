@@ -4,23 +4,27 @@ import type { LiveMatch, TxLineResponse } from "@/app/lib/types";
  * Rich mock data for a World Cup match in progress.
  * Used as fallback when the live TxLINE API returns empty (no match currently playing).
  */
+let mockStartTime = Date.now();
+
 export function getMockMatchData(): TxLineResponse {
   const now = Date.now();
 
   const match: LiveMatch = {
     id: "wc-2026-final-arg-fra",
-    competition: "FIFA World Cup 2026 — Final",
+    competition: "FIFA World Cup 2026",
     status: "live",
     minute: 67,
     home: {
       name: "Argentina",
       code: "ARG",
+      countryId: "ar",
       flag: "🇦🇷",
       score: 2,
     },
     away: {
       name: "France",
       code: "FRA",
+      countryId: "fr",
       flag: "🇫🇷",
       score: 2,
     },
@@ -186,7 +190,7 @@ export function getMockMatchData(): TxLineResponse {
         { label: "Yes", multiplier: 1.55 },
         { label: "No", multiplier: 2.35 },
       ],
-      expiresAt: now + 5 * 60 * 1000, // 5 minutes from now
+      expiresAt: mockStartTime + 5 * 60 * 1000, // 5 minutes from first load
       triggeredBy: "evt-014",
     },
   };

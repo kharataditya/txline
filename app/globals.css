@@ -7,8 +7,8 @@
   --color-primary: #2563eb;
   --color-primary-light: #3b82f6;
   --color-primary-dark: #1d4ed8;
-  --color-glass: rgba(255, 255, 255, 0.6);
-  --color-glass-border: rgba(255, 255, 255, 0.4);
+  --color-glass: rgba(0, 0, 0, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.15);
   --color-glass-shadow: rgba(30, 58, 138, 0.05);
   --color-accent-green: #10b981;
   --color-accent-red: #ef4444;
@@ -23,42 +23,46 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: var(--color-foreground);
-  min-height: 100dvh;
-  /* Ambient mesh gradient background */
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 60%),
+  color: #0f172a;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(96, 165, 250, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(167, 139, 250, 0.15), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.15), transparent 25%),
     #f8fafc;
+  background-attachment: fixed;
 }
 
-/* ── Frosted Glass Utility ────────────────── */
+.bg-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='138.564' height='240' viewBox='0 0 138.564 240'%3E%3Cpath d='M69.282 80L69.282 0M69.282 80L0 120M69.282 80L138.564 120M0 200L0 120M0 200L69.282 240M138.564 200L138.564 120M69.282 240L138.564 200M69.282 240L0 200' stroke='%23cbd5e1' stroke-opacity='0.4' stroke-width='1.5' fill='none' /%3E%3C/svg%3E");
+  background-size: 138.564px 240px;
+  background-repeat: repeat;
+}
+
+/* ── Classic Glassmorphism ────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow:
-    0 20px 25px -5px rgba(30, 58, 138, 0.05),
-    0 8px 10px -6px rgba(30, 58, 138, 0.03);
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 25px 50px -12px rgba(30, 58, 138, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  background-color: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.08);
 }
 
 .glass-subtle {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* ── Pulse Animation ──────────────────────── */
@@ -153,4 +157,100 @@ body {
 
 .toast-exit {
   animation: toast-out 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Solana Wallet Modal Overrides ──────────────────────── */
+.wallet-adapter-modal-wrapper {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 28px !important;
+  color: #0f172a !important;
+  font-family: var(--font-sans) !important;
+}
+
+.wallet-adapter-modal-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 1.5rem !important;
+  padding-bottom: 12px !important;
+}
+
+.wallet-adapter-modal-button-close {
+  background-color: #f1f5f9 !important;
+  border-radius: 50% !important;
+  padding: 8px !important;
+  color: #64748b !important;
+  transition: all 0.2s ease !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* ── Global Header Button ──────────────────────── */
+.wallet-adapter-button-trigger {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-sans) !important;
+  box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.4) !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  padding: 0 20px !important;
+  height: 44px !important;
+}
+
+.wallet-adapter-button-trigger:not([disabled]):hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px -2px rgba(37, 99, 235, 0.5) !important;
+}
+
+/* ── Modal List Buttons ──────────────────────── */
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background: rgba(255, 255, 255, 0.95) !important; /* using background shorthand to override any gradients */
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.03) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  height: 52px !important;
+  padding: 0 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:not([disabled]):hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Force inner spans (like wallet names and "Detected") to be visible */
+.wallet-adapter-modal-list .wallet-adapter-button i {
+  /* This is the wallet icon */
+}
+.wallet-adapter-modal-list .wallet-adapter-button span {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+.wallet-adapter-modal-list .wallet-adapter-button span:last-child {
+  color: #64748b !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+}
+
+.wallet-adapter-modal-list-more {
+  color: #3b82f6 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
 }
